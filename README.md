@@ -10,4 +10,20 @@ pinned: false
 license: mit
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+## Use and Install
+
+```
+git clone https://github.com/Josephrp/LablabAutogen.git
+```
+
+```
+cd LablabAutogen
+```
+
+```
+pip install -r requirements.txt
+```
+
+```
+python main.py
+```
