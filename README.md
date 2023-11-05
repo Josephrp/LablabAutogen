@@ -13,6 +13,10 @@ license: mit
 ## Use and Install
 
 ```
+pip install semantic-kernel pyautogen
+```
+
+```
 git clone https://github.com/Josephrp/LablabAutogen.git
 ```
 
