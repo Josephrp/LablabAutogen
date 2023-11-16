@@ -10,11 +10,11 @@ from semantic_kernel.core_skills.text_skill import TextSkill
 from semantic_kernel.planning.basic_planner import BasicPlanner
 
 # Configure your credentials here
-bing_api_key = "ArAgtjC7LMINRUaY4D6ltro329Po1zNqU82U2JHFDkIbQmzi1_18j71OOdILMdpJ"  # Replace with your Bing API key
+bing_api_key = "ArXXXXdpJ"  # Replace with your Bing API key
 
 llm_config = {
     "type": "openai",  # "azure" or "openai"
-    "openai_api_key": "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",  # OpenAI API Key
+    "openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key
     "azure_deployment": "",  # Azure OpenAI deployment name
     "azure_api_key": "",  # Azure OpenAI API key in the Azure portal
     "azure_endpoint": ""  # Endpoint URL for Azure OpenAI, e.g. https://contoso.openai.azure.com/
