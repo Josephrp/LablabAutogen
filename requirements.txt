@@ -1,6 +1,7 @@
 beautifulsoup4~=4.12
 typing-extensions
 pydantic
+python-dotenv
 gradio
 azure-common
 azure-core

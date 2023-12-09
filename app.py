@@ -1,4 +1,5 @@
 import gradio as gr
+import os
 from pydantic import BaseModel, ValidationError
 from plugins.sk_bing_plugin import BingPlugin
 from plugins.sk_web_pages_plugin import WebPagesPlugin
@@ -8,20 +9,28 @@ from web_search_client.models import SafeSearch
 from azure.core.credentials import AzureKeyCredential
 from semantic_kernel.core_skills.text_skill import TextSkill
 from semantic_kernel.planning.basic_planner import BasicPlanner
+from dotenv import load_dotenv
+import semantic_kernel
 
-# Configure your credentials here
-bing_api_key = "ArXXXXdpJ"  # Replace with your Bing API key
+
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+BING_API_KEY = os.getenv("BING_API_KEY")
+AZURE_API_KEY = os.getenv("AZURE_API_KEY")
+
+
 
 llm_config = {
     "type": "openai",  # "azure" or "openai"
-    "openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key
+    "openai_api_key": OPENAI_API_KEY,  # OpenAI API Key
     "azure_deployment": "",  # Azure OpenAI deployment name
-    "azure_api_key": "",  # Azure OpenAI API key in the Azure portal
+    "azure_api_key": AZURE_API_KEY,  # Azure OpenAI API key in the Azure portal
     "azure_endpoint": ""  # Endpoint URL for Azure OpenAI, e.g. https://contoso.openai.azure.com/
 }
-import semantic_kernel
 kernel = semantic_kernel.Kernel()
-kernel.import_skill(BingPlugin(bing_api_key))
+kernel.import_skill(BingPlugin(BING_API_KEY))
 kernel.import_skill(WebPagesPlugin())
 sk_planner = AutoGenPlanner(kernel, llm_config)
 assistant = sk_planner.create_assistant_agent("Assistant")
