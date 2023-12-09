@@ -1,76 +1,60 @@
-# Copyright (c) Microsoft. All rights reserved.
-
-from typing import Optional
+from typing import Optional, Dict, List
 import semantic_kernel, autogen
-
+import datetime
 
 class AutoGenPlanner:
-    """(Demo) Semantic Kernel planner using Conversational Programming via AutoGen.
-
-    AutoGenPlanner leverages OpenAI Function Calling and AutoGen agents to solve
-    a task using only the Plugins loaded into Semantic Kernel. SK Plugins are
-    automatically shared with AutoGen, so you only need to load the Plugins in SK
-    with the usual `kernel.import_skill(...)` syntax. You can use native and
-    semantic functions without any additional configuration. Currently the integration
-    is limited to functions with a single string parameter. The planner has been
-    tested with GPT 3.5 Turbo and GPT 4. It always used 3.5 Turbo with OpenAI,
-    just for performance and cost reasons.
+    """
+    Semantic Kernel planner using Conversational Programming via AutoGen.
+    Leverages OpenAI Function Calling and AutoGen agents to solve tasks using
+    loaded Semantic Kernel plugins. Supports functions with a single string parameter.
+    Tested with GPT 3.5 Turbo and GPT 4, primarily uses GPT 3.5 Turbo for performance.
     """
 
-    import datetime
-    from typing import List, Dict
+    ASSISTANT_PERSONA = (
+        f"Only use provided functions. Do not ask the user for other actions. "
+        f"Use functions to find unavailable information. "
+        f"Today's date: {datetime.date.today().strftime('%B %d, %Y')}. "
+        f"Reply TERMINATE when the task is done."
+    )
 
-    ASSISTANT_PERSONA = f"""Only use the functions you have been provided with.
-Do not ask the user to perform other actions than executing the functions.
-Use the functions you have to find information not available.
-Today's date is: {datetime.date.today().strftime("%B %d, %Y")}.
-Reply TERMINATE when the task is done.
-"""
-
-    def __init__(self, kernel: semantic_kernel.Kernel, llm_config: Dict = None):
-        """
-        Args:
-            kernel: an instance of Semantic Kernel, with plugins loaded.
-            llm_config: a dictionary with the following keys:
-                - type: "openai" or "azure"
-                - openai_api_key: OpenAI API key
-                - azure_api_key: Azure API key
-                - azure_deployment: Azure deployment name
-                - azure_endpoint: Azure endpoint
-        """
-        super().__init__()
+    def __init__(self, kernel: semantic_kernel.Kernel, llm_config: Dict = None, builder_config_path: str = None):
         self.kernel = kernel
-        self.llm_config = llm_config
+        self.llm_config = llm_config or {}
+        self.builder_config_path = builder_config_path
+        self.validate_llm_config()
+        self.builder = self.create_builder()
+
+    def create_builder(self) -> autogen.agentchat.contrib.agent_builder.AgentBuilder:
+        """
+        Create an instance of AgentBuilder.
+        """
+        if not self.builder_config_path:
+            raise ValueError("Builder config path is required to create AgentBuilder.")
+        return autogen.agentchat.contrib.agent_builder.AgentBuilder(
+            config_path=self.builder_config_path,
+            builder_model='gpt-4-1106-preview',
+            agent_model='gpt-4-1106-preview'
+        )
+
+    def build_agents_for_task(self, task_description: str):
+        """
+        Build agents for a specific task using the AgentBuilder.
+        Args:
+            task_description (str): A description of the task for which agents are to be built.
+        """
+        try:
+            agent_list, agent_configs = self.builder.build(task_description, self.__get_autogen_config(), coding=True)
+            print(f"Agents built successfully for task: '{task_description}'")
+            return agent_list, agent_configs
+        except Exception as e:
+            print(f"Error in building agents for task '{task_description}': {e}")
 
     def create_assistant_agent(self, name: str, persona: str = ASSISTANT_PERSONA) -> autogen.AssistantAgent:
-        """
-        Create a new AutoGen Assistant Agent.
-        Args:
-            name (str): the name of the agent
-            persona (str): the LLM system message defining the agent persona,
-                in case you want to customize it.
-        """
         return autogen.AssistantAgent(name=name, system_message=persona, llm_config=self.__get_autogen_config())
 
     def create_user_agent(
         self, name: str, max_auto_reply: Optional[int] = None, human_input: Optional[str] = "ALWAYS"
     ) -> autogen.UserProxyAgent:
-        """
-        Create a new AutoGen User Proxy Agent.
-        Args:
-            name (str): the name of the agent
-            max_auto_reply (int): the maximum number of consecutive auto replies.
-                default to None (no limit provided).
-            human_input (str): the human input mode. default to "ALWAYS".
-                Possible values are "ALWAYS", "TERMINATE", "NEVER".
-                (1) When "ALWAYS", the agent prompts for human input every time a message is received.
-                    Under this mode, the conversation stops when the human input is "exit",
-                    or when is_termination_msg is True and there is no human input.
-                (2) When "TERMINATE", the agent only prompts for human input only when a termination message is received or
-                    the number of auto reply reaches the max_consecutive_auto_reply.
-                (3) When "NEVER", the agent will never prompt for human input. Under this mode, the conversation stops
-                    when the number of auto reply reaches the max_consecutive_auto_reply or when is_termination_msg is True.
-        """
         return autogen.UserProxyAgent(
             name=name,
             human_input_mode=human_input,
@@ -78,73 +62,73 @@ Reply TERMINATE when the task is done.
             function_map=self.__get_function_map(),
         )
 
-    def __get_autogen_config(self):
-        """
-        Get the AutoGen LLM and Function Calling configuration.
-        """
-        if self.llm_config:
-            if self.llm_config["type"] == "openai":
-                if not self.llm_config["openai_api_key"] or self.llm_config["openai_api_key"] == "sk-...":
-                    raise Exception("OpenAI API key is not set")
-                return {
-                    "functions": self.__get_function_definitions(),
-                    "config_list": [{"model": "gpt-3.5-turbo", "api_key": self.llm_config["openai_api_key"]}],
-                }
-            if self.llm_config["type"] == "azure":
-                if (
-                    not self.llm_config["azure_api_key"]
-                    or not self.llm_config["azure_deployment"]
-                    or not self.llm_config["azure_endpoint"]
-                ):
-                    raise Exception("Azure OpenAI API configuration is incomplete")
-                return {
-                    "functions": self.__get_function_definitions(),
-                    "config_list": [
-                        {
-                            "model": self.llm_config["azure_deployment"],
-                            "api_type": "azure",
-                            "api_key": self.llm_config["azure_api_key"],
-                            "api_base": self.llm_config["azure_endpoint"],
-                            "api_version": "2023-08-01-preview",
-                        }
-                    ],
-                }
+    def validate_llm_config(self):
+        if self.llm_config.get("type") == "openai":
+            if not self.llm_config.get("openai_api_key"):
+                raise ValueError("OpenAI API key is required for OpenAI LLM.")
+        elif self.llm_config.get("type") == "azure":
+            required_keys = ["azure_api_key", "azure_deployment", "azure_endpoint"]
+            if any(key not in self.llm_config for key in required_keys):
+                raise ValueError("Azure OpenAI API configuration is incomplete.")
+        else:
+            raise ValueError("LLM type not provided, must be 'openai' or 'azure'.")
 
-        raise Exception("LLM type not provided, must be 'openai' or 'azure'")
+    def update_llm_config(self, new_config: Dict):
+        self.llm_config = new_config
+        self.validate_llm_config()
+
+    def load_semantic_kernel_plugins(self, plugins: List[str]):
+        """
+        Load Semantic Kernel plugins into the kernel.
+        Args:
+            plugins (List[str]): A list of plugin names to load.
+        """
+        for plugin in plugins:
+            try:
+                self.kernel.import_skill(plugin)
+                print(f"Plugin '{plugin}' loaded successfully.")
+            except Exception as e:
+                print(f"Error loading plugin '{plugin}': {e}")
+
+    def __get_autogen_config(self) -> Dict:
+        if self.llm_config["type"] == "openai":
+            return {
+                "functions": self.__get_function_definitions(),
+                "config_list": [{"model": "gpt-3.5-turbo", "api_key": self.llm_config["openai_api_key"]}]
+            }
+        elif self.llm_config["type"] == "azure":
+            return {
+                "functions": self.__get_function_definitions(),
+                "config_list": [{
+                    "model": self.llm_config["azure_deployment"],
+                    "api_type": "azure",
+                    "api_key": self.llm_config["azure_api_key"],
+                    "api_base": self.llm_config["azure_endpoint"],
+                    "api_version": "2023-08-01-preview"
+                }]
+            }
 
     def __get_function_definitions(self) -> List:
-        """
-        Get the list of function definitions for OpenAI Function Calling.
-        """
         functions = []
         sk_functions = self.kernel.skills.get_functions_view()
-        for ns in {**sk_functions.native_functions, **sk_functions.semantic_functions}:
-            for f in sk_functions.native_functions[ns]:
-                functions.append(
-                    {
+        for ns, funcs in {**sk_functions.native_functions, **sk_functions.semantic_functions}.items():
+            for f in funcs:
+                if len(f.parameters) == 1 and f.parameters[0].type_ == "string":
+                    functions.append({
                         "name": f.name,
                         "description": f.description,
                         "parameters": {
                             "type": "object",
-                            "properties": {
-                                f.parameters[0].name: {
-                                    "description": f.parameters[0].description,
-                                    "type": f.parameters[0].type_,
-                                }
-                            },
-                            "required": [f.parameters[0].name],
-                        },
-                    }
-                )
+                            "properties": {f.parameters[0].name: {"description": f.parameters[0].description, "type": "string"}},
+                            "required": [f.parameters[0].name]
+                        }
+                    })
         return functions
 
     def __get_function_map(self) -> Dict:
-        """
-        Get the function map for AutoGen Function Calling.
-        """
         function_map = {}
         sk_functions = self.kernel.skills.get_functions_view()
-        for ns in {**sk_functions.native_functions, **sk_functions.semantic_functions}:
-            for f in sk_functions.native_functions[ns]:
+        for ns, funcs in {**sk_functions.native_functions, **sk_functions.semantic_functions}.items():
+            for f in funcs:
                 function_map[f.name] = self.kernel.skills.get_function(f.skill_name, f.name)
         return function_map
