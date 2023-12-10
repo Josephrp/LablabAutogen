@@ -25,6 +25,23 @@ class AutoGenPlanner:
         self.validate_llm_config()
         self.builder = self.create_builder()
 
+    def execute_code(self, code: str) -> str:
+        """
+        Execute a Python code snippet and return the result.
+        Args:
+            code (str): The Python code to execute.
+        Returns:
+            str: The output of the executed code.
+        """
+        ipython = get_ipython()
+        result = ipython.run_cell(code)
+        output = str(result.result)
+        if result.error_before_exec is not None:
+            output += f"\n{result.error_before_exec}"
+        if result.error_in_exec is not None:
+            output += f"\n{result.error_in_exec}"
+        return output
+
     def create_builder(self) -> autogen.agentchat.contrib.agent_builder.AgentBuilder:
         """
         Create an instance of AgentBuilder.
