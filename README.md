@@ -24,7 +24,7 @@ git clone https://github.com/Tonic-AI/EasyAGI
 ```
 
 ```bash
-cd LablabAutogen
+cd EasyAGI
 ```
 
 If you're on Windows :
