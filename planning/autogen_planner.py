@@ -1,7 +1,8 @@
 from typing import Optional, Dict, List
 import semantic_kernel, autogen
 import datetime
-from autogen.agentchat.contrib.agent_builder import AgentBuilder
+import autogen
+from .agent_builder import AgentBuilder
 
 class AutoGenPlanner:
     """
