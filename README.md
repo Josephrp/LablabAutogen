@@ -29,7 +29,7 @@ git clone https://github.com/Tonic-AI/EasyAGI
 cd EasyAGI
 ```
 
-If you're on Windows :
+If you're on Windows run the following command and edit the files below using notepad or VSCode and save them accordingly.
 
 ```bash
 set PATH=%PATH%
