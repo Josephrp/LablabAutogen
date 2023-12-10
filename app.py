@@ -28,11 +28,7 @@ llm_config = autogen.config_list_from_json(
 
 builder_config_path = autogen.config_list_from_json(
     env_or_file="OAI_CONFIG_LIST.json",
-    filter_dict={
-        "model": {
-            "gpt-4-1106-preview"
-        }
-    }
+    filter_dict={"model": {"gpt-4-1106-preview"}}
 )
 
 Zilliz_config = {
@@ -43,7 +39,7 @@ Zilliz_config = {
 kernel = semantic_kernel.Kernel()
 kernel.import_skill(BingPlugin(bing_api_key))
 kernel.import_skill(WebPagesPlugin())
-sk_planner = AutoGenPlanner(kernel, llm_config)
+sk_planner = AutoGenPlanner(kernel, llm_config, builder_config_path)
 
 assistant = sk_planner.create_assistant_agent("Assistant")
 def get_response(question, max_auto_reply):
