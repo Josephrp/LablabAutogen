@@ -14,13 +14,24 @@ from semantic_kernel import Kernel
 # Configure your credentials here
 bing_api_key = "ArXXXXdpJ"  # Replace with your Bing API key
 
-llm_config = {
-    "type": "openai",  # "azure" or "openai"
-    "openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key
-    "azure_deployment": "",  # Azure OpenAI deployment name
-    "azure_api_key": "",  # Azure OpenAI API key in the Azure portal
-    "azure_endpoint": ""  # Endpoint URL for Azure OpenAI, e.g. https://contoso.openai.azure.com/
+# llm_config = {
+#   "type": "openai",  # "azure" or "openai"
+#   "openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key
+#   "azure_deployment": "",  # Azure OpenAI deployment name
+#   "azure_api_key": "",  # Azure OpenAI API key in the Azure portal
+#    "azure_endpoint": ""  # Endpoint URL for Azure OpenAI, e.g. https://contoso.openai.azure.com/
 }
+llm_config = autogen.config_list_from_json(
+    env_or_file="OAI_CONFIG_LIST.json",
+    filter_dict={
+        "model": {
+            "gpt-4",
+            "gpt-3.5-turbo-16k",
+            "gpt-4-1106-preview"
+        }
+    }
+)
+
 Zilliz_config = {
     "host": "your_milvus_host",
     "port": "your_milvus_port",
