@@ -21,6 +21,10 @@ cd LablabAutogen
 ```
 
 ```bash
+set PATH=%PATH%;%CD%
+```
+
+```bash
 nano app.py
 ```
 
