@@ -1,4 +1,5 @@
-from pymilvus import connections, Collection
+import milvus
+from milvus import Milvus, connections, Collection
 from typing import List, Dict, Any
 
 class ZillizRetrievalAgent:
