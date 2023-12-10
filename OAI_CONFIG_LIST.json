@@ -1,15 +1,15 @@
 [
     {
         "model": "gpt-4",
-        "api_key": "<your OpenAI API key here>"
+        "api_key": "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"
     },
     {
         "model": "gpt-4-1106-preview",
-        "api_key": "<your OpenAI API key here>"
+        "api_key": "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"
     },
     {
         "model": "gpt-3.5-turbo-16k",
-        "api_key": "<your OpenAI API key here>"
+        "api_key": "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"
     },
     {
         "model": "gpt-4",

@@ -23,13 +23,7 @@ bing_api_key = "ArXXXXdpJ"  # Replace with your Bing API key
 #}
 llm_config = autogen.config_list_from_json(
     env_or_file="OAI_CONFIG_LIST.json",
-    filter_dict={
-        "model": {
-            "gpt-4",
-            "gpt-3.5-turbo-16k",
-            "gpt-4-1106-preview"
-        }
-    }
+    filter_dict={"model": {"gpt-4", "gpt-3.5-turbo-16k", "gpt-4-1106-preview"}}
 )
 
 builder_config_path = autogen.config_list_from_json(
@@ -42,9 +36,9 @@ builder_config_path = autogen.config_list_from_json(
 )
 
 Zilliz_config = {
-    "host": "your_milvus_host",
-    "port": "your_milvus_port",
-    "collection_name": "your_collection_name"
+    "host": "your_milvus_host", # use Zilliz Cloud
+    "port": "your_milvus_port", # use Zilliz Cloud
+    "collection_name": "your_collection_name" # use Zilliz Cloud
 }
 kernel = semantic_kernel.Kernel()
 kernel.import_skill(BingPlugin(bing_api_key))

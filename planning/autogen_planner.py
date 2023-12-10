@@ -23,7 +23,7 @@ class AutoGenPlanner:
         self.kernel = kernel
         self.llm_config = llm_config or {}
         self.builder_config_path = builder_config_path
-        self.validate_llm_config()
+#       self.validate_llm_config()
         self.builder = self.create_builder()
         self.Zilliz_agent = ZillizRetrievalAgent(**zilliz_config) if zilliz_config else None
 
@@ -87,16 +87,16 @@ class AutoGenPlanner:
             raise ValueError("Zilliz agent is not configured.")
         return self.Zilliz_agent.search([query_vector], top_k, {"nprobe": 16})
 
-    def validate_llm_config(self):
-        if self.llm_config.get("type") == "openai":
-            if not self.llm_config.get("openai_api_key"):
-                raise ValueError("OpenAI API key is required for OpenAI LLM.")
-        elif self.llm_config.get("type") == "azure":
-            required_keys = ["azure_api_key", "azure_deployment", "azure_endpoint"]
-            if any(key not in self.llm_config for key in required_keys):
-                raise ValueError("Azure OpenAI API configuration is incomplete.")
-        else:
-            raise ValueError("LLM type not provided, must be 'openai' or 'azure'.")
+#   def validate_llm_config(self):
+#       if self.llm_config.get("type") == "openai":
+#           if not self.llm_config.get("openai_api_key"):
+#               raise ValueError("OpenAI API key is required for OpenAI LLM.")
+#       elif self.llm_config.get("type") == "azure":
+#           required_keys = ["azure_api_key", "azure_deployment", "azure_endpoint"]
+#           if any(key not in self.llm_config for key in required_keys):
+#               raise ValueError("Azure OpenAI API configuration is incomplete.")
+#       else:
+#           raise ValueError("LLM type not provided, must be 'openai' or 'azure'.")
 
     def update_llm_config(self, new_config: Dict):
         self.llm_config = new_config
@@ -116,22 +116,19 @@ class AutoGenPlanner:
                 print(f"Error loading plugin '{plugin}': {e}")
 
     def __get_autogen_config(self) -> Dict:
-        if self.llm_config["type"] == "openai":
-            return {
-                "functions": self.__get_function_definitions(),
-                "config_list": [{"model": "gpt-3.5-turbo", "api_key": self.llm_config["openai_api_key"]}]
-            }
-        elif self.llm_config["type"] == "azure":
-            return {
-                "functions": self.__get_function_definitions(),
-                "config_list": [{
-                    "model": self.llm_config["azure_deployment"],
-                    "api_type": "azure",
-                    "api_key": self.llm_config["azure_api_key"],
-                    "api_base": self.llm_config["azure_endpoint"],
-                    "api_version": "2023-08-01-preview"
-                }]
-            }
+
+        for config in self.llm_config:
+            if config.get("type") == "openai":
+                return {
+                    "functions": self.__get_function_definitions(),
+                    "config_list": [config]  
+                }
+            elif config.get("type") == "azure":
+                return {
+                    "functions": self.__get_function_definitions(),
+                    "config_list": [config] 
+                }
+        raise ValueError("No suitable LLM configuration found.")
 
     def __get_function_definitions(self) -> List:
         functions = []
