@@ -12,7 +12,7 @@ license: mit
 
 ## Use and Install on the Command Line
 
-```bashh
+
 git clone https://github.com/Josephrp/LablabAutogen.git
 ```
 
