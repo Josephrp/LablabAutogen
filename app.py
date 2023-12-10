@@ -43,9 +43,9 @@ Zilliz_config = {
 kernel = semantic_kernel.Kernel()
 kernel.import_skill(BingPlugin(bing_api_key))
 kernel.import_skill(WebPagesPlugin())
-sk_planner = AutoGenPlanner(kernel, llm_config, builder_config_path)
-assistant = sk_planner.create_assistant_agent("Assistant")
+sk_planner = AutoGenPlanner(kernel, llm_config)
 
+assistant = sk_planner.create_assistant_agent("Assistant")
 def get_response(question, max_auto_reply):
     worker = sk_planner.create_user_agent("Worker", max_auto_reply=max_auto_reply, human_input="NEVER")
     assistant = sk_planner.create_assistant_agent("Assistant")

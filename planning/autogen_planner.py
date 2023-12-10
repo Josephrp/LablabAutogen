@@ -117,18 +117,15 @@ class AutoGenPlanner:
 
     def __get_autogen_config(self) -> Dict:
 
+        desired_model = "gpt-4-1106-preview"  # Update this with your choice of model
+
         for config in self.llm_config:
-            if config.get("type") == "openai":
+            if config.get("model") == desired_model:
                 return {
                     "functions": self.__get_function_definitions(),
-                    "config_list": [config]  
+                    "config_list": [config]
                 }
-            elif config.get("type") == "azure":
-                return {
-                    "functions": self.__get_function_definitions(),
-                    "config_list": [config] 
-                }
-        raise ValueError("No suitable LLM configuration found.")
+        raise ValueError(f"No suitable LLM configuration found for model '{desired_model}'.")
 
     def __get_function_definitions(self) -> List:
         functions = []
