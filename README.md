@@ -12,17 +12,23 @@ license: mit
 
 **Check the plugins folder for new Semantic Kernel Plugins**
 
+## Before You Install and Use
+
+- sign up and get an api key for open ai
+- sign up and set up a project in [zilliz cloud](https://cloud.zilliz.com/)
+
 ## Use and Install on the Command Line
 
-```bashh
-git clone https://github.com/Josephrp/LablabAutogen.git
+```bash
+git clone https://github.com/Tonic-AI/EasyAGI
 ```
 
 ```bash
 cd LablabAutogen
 ```
 
-On Windows Only :
+If you're on Windows :
+
 ```bash
 set PATH=%PATH%
 ```
@@ -32,7 +38,14 @@ then
 nano app.py
 ```
 
-edit line 17 "    ```"openai_api_key": "YOUR_KEY_HERE",  # OpenAI API Key``` with your key
+edit line 19 "    ```"openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key``` with your key
+and edit lines 25-27 
+```python    
+    "host": "your_milvus_host",
+    "port": "your_milvus_port",
+    "collection_name": "your_collection_name"
+    ```
+with your zilliz cloud credentials. 
 
 then press:
 
