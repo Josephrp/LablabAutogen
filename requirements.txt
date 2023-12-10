@@ -20,3 +20,4 @@ microsoft-bing-customimagesearch
 microsoft-bing-customwebsearch
 msrest
 msrestazure
+pymilvus

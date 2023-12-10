@@ -21,7 +21,11 @@ llm_config = {
     "azure_api_key": "",  # Azure OpenAI API key in the Azure portal
     "azure_endpoint": ""  # Endpoint URL for Azure OpenAI, e.g. https://contoso.openai.azure.com/
 }
-import semantic_kernel
+Zilliz_config = {
+    "host": "your_milvus_host",
+    "port": "your_milvus_port",
+    "collection_name": "your_collection_name"
+}
 kernel = semantic_kernel.Kernel()
 kernel.import_skill(BingPlugin(bing_api_key))
 kernel.import_skill(WebPagesPlugin())

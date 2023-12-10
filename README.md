@@ -10,6 +10,8 @@ pinned: false
 license: mit
 ---
 
+**Check the plugins folder for new Semantic Kernel Plugins**
+
 ## Use and Install on the Command Line
 
 ```bashh
