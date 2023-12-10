@@ -8,6 +8,7 @@ from web_search_client.models import SafeSearch
 from azure.core.credentials import AzureKeyCredential
 from semantic_kernel.core_skills.text_skill import TextSkill
 from semantic_kernel.planning.basic_planner import BasicPlanner
+from semantic_kernel import Kernel
 
 # Configure your credentials here
 bing_api_key = "ArXXXXdpJ"  # Replace with your Bing API key
@@ -28,8 +29,12 @@ assistant = sk_planner.create_assistant_agent("Assistant")
 
 def get_response(question, max_auto_reply):
     worker = sk_planner.create_user_agent("Worker", max_auto_reply=max_auto_reply, human_input="NEVER")
+    assistant = sk_planner.create_assistant_agent("Assistant")
     worker.initiate_chat(assistant, message=question)
     return worker.get_response()
 
-iface = gr.Interface(fn=get_response, inputs=["text", "number"], outputs="text", inputs_label=["Question", "Max Auto Reply"])
-iface.launch()
+if __name__ == "__main__":
+    question = input("Tonic's EasyAGI builds multi-agent systems that use Semantic-Kernel Plugins to automate your business operations ! Describe your problem in detail, then optionally bullet point a brief step by step way to solve it, then (or optionally) give a clear command or instruction to solve the issues above:")
+    max_auto_reply = int(input("Set a maximum number of autoreplies by entering a number with minimum 10: "))
+    response = simulate_conversation(question, max_auto_reply)
+    print("Response:", response)
