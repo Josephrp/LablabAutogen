@@ -59,7 +59,7 @@ class AgentBuilder:
 
     def __init__(
         self,
-        config_path: Optional[str] = "OAI_CONFIG_LIST",
+        config_path: Optional[str] = "OAI_CONFIG_LIST.json",
         builder_model: Optional[str] = "gpt-4",
         agent_model: Optional[str] = "gpt-4",
         host: Optional[str] = "localhost",
