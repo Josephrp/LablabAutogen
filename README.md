@@ -35,14 +35,43 @@ set PATH=%PATH%
 then 
 
 ```bash
+nano OAI_CONFIG.json
+```
+
+enter your keys into the space provided, eg: 
+```json
+   {
+        "model": "gpt-4",
+        "api_key": "<your OpenAI API key here>"
+    },
+    {
+        "model": "gpt-4",
+        "api_key": "<your Azure OpenAI API key here>",
+        "api_base": "<your Azure OpenAI API base here>",
+        "api_type": "azure",
+        "api_version": "2023-07-01-preview"
+    }
+```
+with your keys or Azure OpenAI deployments
+
+then press:
+
+```nano
+ control + x
+```
+
+Write :
+
+```nano
+Y
+```
+
+to save then run
+
+```bash
 nano app.py
 ```
 
-edit line 19 
-```python
-"openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key
-```
-with your key
 and edit lines 25-27 
 
 ```python    
@@ -58,11 +87,10 @@ then press:
 ```nano
  control + x
 ```
-
 Write :
 
 ```nano
-Y
+y
 ```
 
 to save then type :
