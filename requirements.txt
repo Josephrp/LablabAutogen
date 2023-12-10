@@ -21,3 +21,4 @@ microsoft-bing-customwebsearch
 msrest
 msrestazure
 pymilvus
+bs4
