@@ -24,7 +24,7 @@ git clone https://github.com/Tonic-AI/EasyAGI
 ```
 
 ```bash
-cd LablabAutogen
+cd EasyAGI
 ```
 
 If you're on Windows :
@@ -38,13 +38,19 @@ then
 nano app.py
 ```
 
-edit line 19 "    ```"openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key``` with your key
+edit line 19 
+```python
+"openai_api_key": "sk-rR5XXXXm",  # OpenAI API Key
+```
+with your key
 and edit lines 25-27 
+
 ```python    
     "host": "your_milvus_host",
     "port": "your_milvus_port",
     "collection_name": "your_collection_name"
-    ```
+```
+
 with your zilliz cloud credentials. 
 
 then press:
