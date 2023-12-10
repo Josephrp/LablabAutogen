@@ -20,9 +20,11 @@ git clone https://github.com/Josephrp/LablabAutogen.git
 cd LablabAutogen
 ```
 
+On Windows Only :
 ```bash
-set PATH=%PATH%;%CD%
+set PATH=%PATH%
 ```
+then 
 
 ```bash
 nano app.py

@@ -36,5 +36,5 @@ def get_response(question, max_auto_reply):
 if __name__ == "__main__":
     question = input("Tonic's EasyAGI builds multi-agent systems that use Semantic-Kernel Plugins to automate your business operations ! Describe your problem in detail, then optionally bullet point a brief step by step way to solve it, then (or optionally) give a clear command or instruction to solve the issues above:")
     max_auto_reply = int(input("Set a maximum number of autoreplies by entering a number with minimum 10: "))
-    response = simulate_conversation(question, max_auto_reply)
+    response = get_response(question, max_auto_reply) 
     print("Response:", response)
