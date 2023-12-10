@@ -17,7 +17,9 @@ license: mit
 - sign up and get an api key for open ai
 - sign up and set up a project in [zilliz cloud](https://cloud.zilliz.com/)
 
-## Use and Install on the Command Line
+## Use and Install
+
+on the command line :
 
 ```bash
 git clone https://github.com/Tonic-AI/EasyAGI
@@ -27,18 +29,19 @@ git clone https://github.com/Tonic-AI/EasyAGI
 cd EasyAGI
 ```
 
-If you're on Windows :
+If you're on Windows run the following command and edit the files below using notepad or VSCode and save them accordingly.
 
 ```bash
 set PATH=%PATH%
 ```
-then 
+then edit the OAI_CONFIG_LIST file or on the command line:
 
 ```bash
-nano OAI_CONFIG.json
+nano OAI_CONFIG_LIST.json
 ```
 
 enter your keys into the space provided, eg: 
+
 ```json
    {
         "model": "gpt-4",
@@ -54,7 +57,7 @@ enter your keys into the space provided, eg:
 ```
 with your keys or Azure OpenAI deployments
 
-then press:
+on the command line , press:
 
 ```nano
  control + x
@@ -72,7 +75,7 @@ to save then run
 nano app.py
 ```
 
-and edit lines 25-27 
+and edit lines 25-27 of app.py 
 
 ```python    
     "host": "your_milvus_host",
@@ -82,7 +85,9 @@ and edit lines 25-27
 
 with your zilliz cloud credentials. 
 
-then press:
+and line 15 with your Bing! api key then save. 
+
+or if you're on the command line press:
 
 ```nano
  control + x
@@ -93,7 +98,9 @@ Write :
 y
 ```
 
-to save then type :
+to save.
+
+then type the following in your command line
 
 ```bash
 pip install -r requirements.txt
@@ -104,4 +111,4 @@ and finally :
 ```bash
 python app.py
 ```
-to run.
+to run. or install and run the application inside your compiler - like VS Code. 
