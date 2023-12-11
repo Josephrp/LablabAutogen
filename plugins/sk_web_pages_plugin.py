@@ -3,8 +3,6 @@
 from semantic_kernel.skill_definition import sk_function
 from bs4 import BeautifulSoup
 import re, aiohttp
-
-
 class WebPagesPlugin:
     """
     A plugin to interact with web pages, e.g. download the text content of a page.
@@ -32,4 +30,8 @@ class WebPagesPlugin:
 
                 # get text and compact empty lines
                 text = soup.get_text()
-                return re.sub(r"[\r\n][\r\n]{2,}", "\n\n", text)
+                # remove multiple empty lines
+                text = re.sub(r"[\r\n][\r\n]{2,}", "\n\n", text)
+                # remove leading and trailing empty spaces, leaving max 1 empty space at the beginning of each line
+                text = re.sub(r"[\n] +", "\n ", text)
+                return text
