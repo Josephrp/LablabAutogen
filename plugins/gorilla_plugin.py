@@ -50,41 +50,60 @@ class GorillaPlugin:
                 }
         return changes
 
-    async def execute_commands(self, cli_commands: List[str]):
+    async def execute_commands(self, natural_language_commands: List[str]):
         # Collect initial environment info
         await self.collect_environment_info()
         initial_env_info = self._env_info.copy()
-        # ... (rest of the method remains unchanged)
-        for command in cli_commands:
-            user_confirmation = input(f"Do you want to execute: {command}? (yes/no) ")
+
+        for nl_command in natural_language_commands:
+            # Pass the natural language command to the Gorilla CLI and get the CLI command
+            process = await subprocess.create_subprocess_shell(
+                f"{self._cli_path} \"{nl_command}\"",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+
+            if process.returncode != 0:
+                print(f"Failed to get CLI command for: {nl_command}")
+                print(f"Error: {stderr.decode().strip()}")
+                continue
+
+            cli_command = stdout.decode().strip()
+            print(f"CLI command to execute: {cli_command}")
+
+            # Ask for user confirmation before executing the CLI command
+            user_confirmation = input(f"Do you want to execute: {cli_command}? (yes/no) ")
             if user_confirmation.lower() == 'yes':
-                # Execute the command using subprocess
+                # Execute the CLI command using subprocess
                 process = await subprocess.create_subprocess_shell(
-                    command,
+                    cli_command,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
                 stdout, stderr = await process.communicate()
 
                 if process.returncode == 0:
-                    print(f"Command executed successfully: {command}")
+                    print(f"Command executed successfully: {cli_command}")
                     print(f"Output: {stdout.decode().strip()}")
                 else:
-                    print(f"Command failed: {command}")
+                    print(f"Command failed: {cli_command}")
                     print(f"Error: {stderr.decode().strip()}")
 
                 # Collect updated environment info
                 await self.collect_environment_info()
                 updated_env_info = self._env_info.copy()
 
-                # Compare initial and updated environment info, if needed
-                # ...
+                # Compare initial and updated environment info
+                env_changes = self.compare_environment_info(initial_env_info, updated_env_info)
+                if env_changes:
+                    print("Environment changes detected:")
+                    for key, change in env_changes.items():
+                        print(f"{key}: from '{change['initial']}' to '{change['updated']}'")
 
                 # After execution, get user feedback
-                user_feedback = input("Please provide feedback about the environment: ")
+                user_feedback = input("Please provide feedback about the execution: ")
                 print(f"Received feedback: {user_feedback}")
-                print(f"Initial environment info: {initial_env_info}")
-                print(f"Updated environment info: {updated_env_info}")
             else:
                 print("Command execution skipped by user.")
 
