@@ -78,11 +78,9 @@ async def main():
     # Initialize GorillaPlugin with the path to the Gorilla CLI
     gorilla_plugin = GorillaPlugin(cli_path="/path/to/gorilla-cli")
 
-    # Process the input
-    processed_input = gorilla_plugin.process_user_input(user_input)
-
-    # Generate CLI commands
-    cli_commands = gorilla_plugin.generate_cli_commands(processed_input)
+    # Placeholder for processing the input and generating CLI commands
+    # TODO: Implement the logic to process input and generate CLI commands
+    cli_commands = ["echo 'Placeholder command'"]
 
     # Execute commands and handle feedback
     await gorilla_plugin.execute_commands(cli_commands)
