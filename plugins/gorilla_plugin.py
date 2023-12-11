@@ -22,22 +22,39 @@ class GorillaPlugin:
         Collects information about the environment where the commands are executed.
         """
         uname_command = "uname -a"  # This is for Unix-like systems, for Windows use 'systeminfo'
-        process = await subprocess.create_subprocess_shell(
-            uname_command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        stdout, stderr = await process.communicate()
+        try:
+            process = await subprocess.create_subprocess_shell(
+                uname_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
 
-        if process.returncode == 0:
-            self._env_info['uname'] = stdout.decode().strip()
-        else:
-            self._env_info['uname'] = f"Error collecting environment info: {stderr.decode().strip()}"
+            if process.returncode == 0:
+                self._env_info['uname'] = stdout.decode().strip()
+            else:
+                self._env_info['uname'] = f"Error collecting environment info: {stderr.decode().strip()}"
+        except Exception as e:
+            self._env_info['uname'] = f"Exception collecting environment info: {str(e)}"
+
+    def compare_environment_info(self, initial_env_info: Dict[str, str], updated_env_info: Dict[str, str]) -> Dict[str, str]:
+        """
+        Compares the initial and updated environment information and returns the differences.
+        """
+        changes = {}
+        for key in initial_env_info:
+            if initial_env_info[key] != updated_env_info.get(key, None):
+                changes[key] = {
+                    'initial': initial_env_info[key],
+                    'updated': updated_env_info.get(key, None)
+                }
+        return changes
 
     async def execute_commands(self, cli_commands: List[str]):
         # Collect initial environment info
         await self.collect_environment_info()
         initial_env_info = self._env_info.copy()
+        # ... (rest of the method remains unchanged)
         for command in cli_commands:
             user_confirmation = input(f"Do you want to execute: {command}? (yes/no) ")
             if user_confirmation.lower() == 'yes':
