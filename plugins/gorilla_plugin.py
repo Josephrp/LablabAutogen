@@ -1,4 +1,5 @@
 import asyncio
+import asyncio.subprocess as subprocess
 from typing import List
 
 class GorillaPlugin:
@@ -39,9 +40,21 @@ class GorillaPlugin:
         for command in cli_commands:
             user_confirmation = input(f"Do you want to execute: {command}? (yes/no) ")
             if user_confirmation.lower() == 'yes':
-                # Here you would insert the actual command execution logic, e.g., subprocess call
-                print(f"Executing: {command}")
-                await asyncio.sleep(0)  # Simulate async execution
+                # Execute the command using subprocess
+                process = await subprocess.create_subprocess_shell(
+                    command,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
+
+                if process.returncode == 0:
+                    print(f"Command executed successfully: {command}")
+                    print(f"Output: {stdout.decode().strip()}")
+                else:
+                    print(f"Command failed: {command}")
+                    print(f"Error: {stderr.decode().strip()}")
+
                 # After execution, get user feedback
                 user_feedback = input("Please provide feedback about the environment: ")
                 print(f"Received feedback: {user_feedback}")
