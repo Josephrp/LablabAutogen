@@ -42,10 +42,32 @@ class GorillaPlugin:
                 }
         return changes
 
-    async def execute_commands(self, natural_language_commands: List[str]):
-        # Collect initial environment info
-        await self.collect_environment_info()
-        initial_env_info = self._env_info.copy()
+    async def queue_commands(self, natural_language_commands: List[str]) -> List[str]:
+        """
+        Processes natural language commands and queues them for execution after user confirmation.
+        """
+        queued_commands = []
+        for nl_command in natural_language_commands:
+            # Pass the natural language command to the Gorilla CLI and get the CLI command
+            try:
+                process = await subprocess.create_subprocess_shell(
+                    f"{self._cli_path} \"{nl_command}\"",
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
+
+                if process.returncode != 0:
+                    print(f"Failed to get CLI command for: {nl_command}")
+                    print(f"Error: {stderr.decode().strip()}")
+                    continue
+            except Exception as e:
+                print(f"Exception while processing command '{nl_command}': {str(e)}")
+                continue
+
+            cli_command = stdout.decode().strip()
+            queued_commands.append(cli_command)
+        return queued_commands
 
         for nl_command in natural_language_commands:
             # Pass the natural language command to the Gorilla CLI and get the CLI command
@@ -68,8 +90,18 @@ class GorillaPlugin:
             cli_command = stdout.decode().strip()
             print(f"CLI command to execute: {cli_command}")
 
-            # Execute the CLI command using subprocess without immediate user confirmation
-            # User feedback will be collected after all commands have been processed
+    async def execute_commands(self, cli_commands: List[str]):
+        """
+        Executes a list of CLI commands after user confirmation.
+        """
+        # TODO: Implement user confirmation logic here
+
+        # Collect initial environment info
+        await self.collect_environment_info()
+        initial_env_info = self._env_info.copy()
+
+        for cli_command in cli_commands:
+            # Execute the CLI command using subprocess
             process = await subprocess.create_subprocess_shell(
                 cli_command,
                 stdout=subprocess.PIPE,
@@ -95,6 +127,15 @@ class GorillaPlugin:
                 for key, change in env_changes.items():
                     print(f"{key}: from '{change['initial']}' to '{change['updated']}'")
 
+async def confirm_and_execute_commands(gorilla_plugin: GorillaPlugin, queued_commands: List[str]):
+    """
+    Confirms with the user before executing queued commands.
+    """
+    # TODO: Implement user confirmation logic here
+
+    # If confirmed, execute the commands
+    await gorilla_plugin.execute_commands(queued_commands)
+
 async def main():
     # Example user input
     user_input = "Generate a report from yesterday's logs and email it to the team"
@@ -103,12 +144,11 @@ async def main():
     import os
     gorilla_plugin = GorillaPlugin(cli_path=os.getenv('GORILLA_CLI_PATH'))
 
-    # Placeholder for processing the input and generating CLI commands
-    # TODO: Implement the logic to process input and generate CLI commands
-    cli_commands = ["echo 'Placeholder command'"]
+    # Process the input and queue CLI commands
+    queued_commands = await gorilla_plugin.queue_commands([user_input])
 
-    # Execute commands and handle feedback
-    await gorilla_plugin.execute_commands(cli_commands)
+    # Confirm and execute commands
+    await confirm_and_execute_commands(gorilla_plugin, queued_commands)
 
 if __name__ == "__main__":
     asyncio.run(main())
