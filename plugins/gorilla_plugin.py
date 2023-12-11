@@ -33,14 +33,14 @@ class GorillaPlugin:
         """
         Compares the initial and updated environment information and returns the differences.
         """
-        changes = {}
-        for key in initial_env_info:
-            if initial_env_info[key] != updated_env_info.get(key, None):
-                changes[key] = {
-                    'initial': initial_env_info[key],
-                    'updated': updated_env_info.get(key, None)
-                }
-        return changes
+        return {
+            key: {
+                'initial': initial_env_info[key],
+                'updated': updated_env_info.get(key),
+            }
+            for key, value in initial_env_info.items()
+            if value != updated_env_info.get(key)
+        }
 
     async def queue_commands(self, natural_language_commands: List[str]) -> List[str]:
         """
@@ -103,9 +103,9 @@ class GorillaPlugin:
             await self.collect_environment_info()
             updated_env_info = self._env_info.copy()
 
-            # Compare initial and updated environment info
-            env_changes = self.compare_environment_info(initial_env_info, updated_env_info)
-            if env_changes:
+            if env_changes := self.compare_environment_info(
+                initial_env_info, updated_env_info
+            ):
                 print("Environment changes detected:")
                 for key, change in env_changes.items():
                     print(f"{key}: from '{change['initial']}' to '{change['updated']}'")
