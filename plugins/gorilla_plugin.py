@@ -16,24 +16,6 @@ class GorillaPlugin:
     def __init__(self):
         pass
 
-    def process_user_input(self, input_description: str) -> str:
-        """
-        Process the high-level user input to a format suitable for Gorilla CLI.
-        (This function might involve natural language processing or simple parsing)
-        """
-        # Process input
-        processed_input = input_description  # Simplified for illustration
-        return processed_input
-
-    def generate_cli_commands(self, processed_input: str) -> list:
-        """
-        Use Gorilla CLI to generate a series of CLI commands based on the processed input.
-        (This function would interface with Gorilla CLI)
-        """
-        # For the sake of example, let's assume we have a function in Gorilla CLI that does this.
-        # In reality, you would replace this with actual Gorilla CLI function calls.
-        cli_commands = ["echo 'Command 1'", "echo 'Command 2'"]  # Example commands
-        return cli_commands
 
     async def collect_environment_info(self) -> None:
         """
