@@ -94,7 +94,13 @@ class GorillaPlugin:
         """
         Executes a list of CLI commands after user confirmation.
         """
-        # TODO: Implement user confirmation logic here
+        # Ask for user confirmation before executing commands
+        user_confirmation = input("Do you want to execute the queued commands? (yes/no): ")
+        if user_confirmation.lower() == 'yes':
+            # If confirmed, execute the commands
+            await gorilla_plugin.execute_commands(queued_commands)
+        else:
+            print("Execution cancelled by the user.")
 
         # Collect initial environment info
         await self.collect_environment_info()
@@ -131,7 +137,11 @@ async def confirm_and_execute_commands(gorilla_plugin: GorillaPlugin, queued_com
     """
     Confirms with the user before executing queued commands.
     """
-    # TODO: Implement user confirmation logic here
+    # Ask for user confirmation before executing commands
+    user_confirmation = input("Do you want to execute the queued commands? (yes/no): ")
+    if user_confirmation.lower() != 'yes':
+        print("Execution cancelled by the user.")
+        return
 
     # If confirmed, execute the commands
     await gorilla_plugin.execute_commands(queued_commands)
