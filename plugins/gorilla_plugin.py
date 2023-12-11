@@ -69,27 +69,6 @@ class GorillaPlugin:
             queued_commands.append(cli_command)
         return queued_commands
 
-        for nl_command in natural_language_commands:
-            # Pass the natural language command to the Gorilla CLI and get the CLI command
-            try:
-                process = await subprocess.create_subprocess_shell(
-                    f"{self._cli_path} \"{nl_command}\"",
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
-                )
-                stdout, stderr = await process.communicate()
-
-                if process.returncode != 0:
-                    print(f"Failed to get CLI command for: {nl_command}")
-                    print(f"Error: {stderr.decode().strip()}")
-                    continue
-            except Exception as e:
-                print(f"Exception while processing command '{nl_command}': {str(e)}")
-                continue
-
-            cli_command = stdout.decode().strip()
-            print(f"CLI command to execute: {cli_command}")
-
     async def execute_commands(self, cli_commands: List[str]):
         """
         Executes a list of CLI commands after user confirmation.
