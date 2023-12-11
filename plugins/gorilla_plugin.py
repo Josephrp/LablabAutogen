@@ -1,4 +1,11 @@
+import asyncio
+from typing import List
+
 class GorillaPlugin:
+    _cli_path: str
+
+    def __init__(self, cli_path: str):
+        self._cli_path = cli_path
     """
     A plugin that uses the Gorilla CLI to perform a series of executions based on a natural language query or high level overview of the user's problem.
     """
@@ -25,21 +32,28 @@ class GorillaPlugin:
         cli_commands = ["echo 'Command 1'", "echo 'Command 2'"]  # Example commands
         return cli_commands
 
-    def execute_commands(self, cli_commands: list):
+    async def execute_commands(self, cli_commands: List[str]):
         """
         Execute the generated CLI commands and provide an interface for user feedback.
         """
         for command in cli_commands:
-            # Execute the command (this could be done via a subprocess call in a real scenario)
-            print(f"Executing: {command}")
-            # Here you would insert the actual command execution logic
+            user_confirmation = input(f"Do you want to execute: {command}? (yes/no) ")
+            if user_confirmation.lower() == 'yes':
+                # Here you would insert the actual command execution logic, e.g., subprocess call
+                print(f"Executing: {command}")
+                await asyncio.sleep(0)  # Simulate async execution
+                # After execution, get user feedback
+                user_feedback = input("Please provide feedback about the environment: ")
+                print(f"Received feedback: {user_feedback}")
+            else:
+                print("Command execution skipped by user.")
 
-def main():
+async def main():
     # Example user input
     user_input = "Generate a report from yesterday's logs and email it to the team"
 
-    # Initialize GorillaPlugin
-    gorilla_plugin = GorillaPlugin()
+    # Initialize GorillaPlugin with the path to the Gorilla CLI
+    gorilla_plugin = GorillaPlugin(cli_path="/path/to/gorilla-cli")
 
     # Process the input
     processed_input = gorilla_plugin.process_user_input(user_input)
@@ -48,7 +62,7 @@ def main():
     cli_commands = gorilla_plugin.generate_cli_commands(processed_input)
 
     # Execute commands and handle feedback
-    gorilla_plugin.execute_commands(cli_commands)
+    await gorilla_plugin.execute_commands(cli_commands)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
