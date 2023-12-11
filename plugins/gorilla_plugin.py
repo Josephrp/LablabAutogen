@@ -75,11 +75,9 @@ class GorillaPlugin:
         """
         # Ask for user confirmation before executing commands
         user_confirmation = input("Do you want to execute the queued commands? (yes/no): ")
-        if user_confirmation.lower() == 'yes':
-            # If confirmed, execute the commands
-            await gorilla_plugin.execute_commands(queued_commands)
-        else:
+        if user_confirmation.lower() != 'yes':
             print("Execution cancelled by the user.")
+            return
 
         # Collect initial environment info
         await self.collect_environment_info()
