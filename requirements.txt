@@ -23,3 +23,5 @@ msrest
 msrestazure
 pymilvus
 bs4
+gorilla-cli
+python-dotenv
